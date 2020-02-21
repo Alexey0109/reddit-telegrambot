@@ -2,7 +2,8 @@ import praw
 import random
 import telebot
 
-token = '910437898:AAE9pmyFTMwATIsmXcNPVBv2z9SdP3nz_WA'
+#token = '910437898:AAE9pmyFTMwATIsmXcNPVBv2z9SdP3nz_WA'
+token = '988804026:AAHxSAggH4GHU70BqQRrbGv28bwabWP3rLs'
 bot = telebot.TeleBot(token)
 
 subreddit = None
@@ -25,17 +26,78 @@ def getPosts(sub):
     print(urls[n])
     return urls[n]
 
+content_filter = None
+
 @bot.message_handler(commands=['start'])
 def StartReply(message):
     bot.send_message(message.chat.id, "Hello!")
 
+@bot.message_handler(commands=['filter'])
+def SetFilterInit(message):
+    bot.send_message(message.chat.id, "Type file format:")
+    bot.register_next_step_handler(message, SetFilter)
+    
+def SetFilter(message):
+    f = open('filter.txt', 'w')
+    if(message.text.lower() == 'all'):
+        f.write('0')
+    else: f.write(message.text.lower())
+    bot.send_message(message.chat.id, "Success!")
+
+def Filter(message):
+    f = open('filter.txt', 'r')
+    content_filter = f.readline()
+    try:
+        subreddit = message.text[1:]
+        #bot.send_message(message.chat.id, "Please, wait...")
+        post_url = getPosts(subreddit)
+        #bot.send_message(message.chat.id, post_url)
+        fileformat = post_url[-3:]
+        if(content_filter == '0'):
+            bot.send_message(message.chat.id, post_url)
+        elif(content_filter == 'gfy'):
+            src = post_url[8:18]
+            if(src=='gfycat.com'):
+                bot.send_message(message.chat.id, post_url)
+            else: bot.send_message(message.chat.id, "No such files. Try again")
+        elif(content_filter == 'text'):
+            if(post_url[-4] != '.'):
+                bot.send_message(message.chat.id, post_url)
+            else:
+                bot.send_message(message.chat.id, "No such files. Try again")
+        elif(fileformat == content_filter):
+            bot.send_message(message.chat.id, post_url)
+        else:
+            bot.send_message(message.chat.id, "No such files. Try again")
+    except:
+        bot.send_message(message.chat.id, "Seems like no such subreddit")
+    
 @bot.message_handler(content_types=['text'])
 def GetSub(message):
+    f = open('filter.txt', 'r')
+    content_filter = f.readline()
     try:
         subreddit = message.text[1:]
         bot.send_message(message.chat.id, "Please, wait...")
         post_url = getPosts(subreddit)
-        bot.send_message(message.chat.id, post_url)
+        #bot.send_message(message.chat.id, post_url)
+        fileformat = post_url[-3:]
+        if(content_filter == '0'):
+            bot.send_message(message.chat.id, post_url)
+        elif(content_filter == 'gfy'):
+            src = post_url[8:18]
+            if(src=='gfycat.com'):
+                bot.send_message(message.chat.id, post_url)
+            else: Filter(message)
+        elif(content_filter == 'text'):
+            if(post_url[-4] != '.'):
+                bot.send_message(message.chat.id, post_url)
+            else:
+                Filter(message)
+        elif(fileformat == content_filter):
+            bot.send_message(message.chat.id, post_url)
+        else:
+            Filter(message)
     except:
         bot.send_message(message.chat.id, "Seems like no such subreddit")
 bot.polling()
