@@ -3,7 +3,6 @@ import random
 import telebot
 
 token = '910437898:AAE9pmyFTMwATIsmXcNPVBv2z9SdP3nz_WA'
-#token = '988804026:AAHxSAggH4GHU70BqQRrbGv28bwabWP3rLs'
 bot = telebot.TeleBot(token)
 
 subreddit = None
