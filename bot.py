@@ -2,9 +2,9 @@ import praw
 import random
 import telebot
 
-#token = '966351011:AAGDUmgrpOfujpT5flyRlOn26Li-_U8f7Dg'
+token = '966351011:AAGDUmgrpOfujpT5flyRlOn26Li-_U8f7Dg'
 #Testbot token
-token = '910437898:AAE9pmyFTMwATIsmXcNPVBv2z9SdP3nz_WA'
+#token = '988804026:AAHxSAggH4GHU70BqQRrbGv28bwabWP3rLs'
 bot = telebot.TeleBot(token)
 
 subreddit = None
@@ -19,7 +19,7 @@ def getPosts(sub):
     i = 0
     urls = {}
     for submission in reddit.subreddit(sub).new(limit=25):
-        urls[i] = submission
+        urls[i] = submission.url
         i += 1
     n = random.randint(0, 25)
     if n == 25: n - 1
@@ -29,26 +29,6 @@ def getPosts(sub):
 
 content_filter = None
 
-@bot.message_handler(commands=['nsfw_filter'])
-def setover18(message):
-    bot.send_message(message.chat.id, 'Display NSFW? (y/n)')
-    bot.register_next_step_handler(message, setOver18)
-
-def setOver18(message):
-    if(message.text.lower() == 'y'):
-        f = open('nsfw_filter.txt', 'w')
-        f.write('1')
-        bot.send_message(message.chat.id, 'NSFW filter was set to 1')
-    else:
-        f = open('nsfw_filter.txt', 'w')
-        f.write('0')
-        bot.send_message(message.chat.id, 'NSFW filter was set to 0')
-
-@bot.message_handler(commands=['getnsfw_filter'])
-def getnsfwfilter(message):
-    f = open('nsfw_filter.txt', 'r')
-    nsfw = f.readline()
-    bot.send_message(message.chat.id, nsfw)
 @bot.message_handler(commands=['getsource'])
 def getsrc(message):
     f = open('source.txt', 'r')
@@ -146,13 +126,8 @@ def Filter(message):
     try:
         subreddit = message.text[1:]
         #bot.send_message(message.chat.id, "Please, wait...")
-        post = getPosts(subreddit).url
-        post_url = post.url
+        post_url = getPosts(subreddit)
         #bot.send_message(message.chat.id, post_url)
-        if (post.over_18):
-            if(over18 == '0'):
-                bot.send_message(message.chat.id, 'NSFW Detected! Please, try again or disable nsfw filter')
-                return
         fileformat = post_url[-3:]
         sourceurl = post_url[:len(source)]
         if(source != '0'):
@@ -180,23 +155,15 @@ def Filter(message):
     
 @bot.message_handler(content_types=['text'])
 def GetSub(message):
-    nsfw = open('nsfw_filter.txt', 'r')
     f = open('filter.txt', 'r')
     content_filter = f.readline()
     ff = open('source.txt', 'r')
     source = ff.readline()
-    over18 = nsfw.readline()
     print(str(len(source)))
     try:
         subreddit = message.text[1:]
         bot.send_message(message.chat.id, "Please, wait...")
-        post = getPosts(subreddit)
-        post_url = post.url
-        #bot.send_message(message.chat.id, post_url)
-        if (post.over_18):
-            if(over18 == '0'):
-                bot.send_message(message.chat.id, 'NSFW Detected! Please, try again or disable nsfw filter')
-                return
+        post_url = getPosts(subreddit)
         #bot.send_message(message.chat.id, post_url)
         fileformat = post_url[-3:]
         sourceurl = post_url[:len(source)]
@@ -220,7 +187,6 @@ def GetSub(message):
             bot.send_message(message.chat.id, post_url)
         else:
             Filter(message)
-    except Exception as e:
+    except:
         bot.send_message(message.chat.id, "Seems like no such subreddit")
-        print(e)
 bot.polling()
