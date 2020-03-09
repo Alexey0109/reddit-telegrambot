@@ -2,9 +2,9 @@ import praw
 import random
 import telebot
 
-token = '966351011:AAGDUmgrpOfujpT5flyRlOn26Li-_U8f7Dg'
+#token = '966351011:AAGDUmgrpOfujpT5flyRlOn26Li-_U8f7Dg'
 #Testbot token
-#token = '910437898:AAE9pmyFTMwATIsmXcNPVBv2z9SdP3nz_WA'
+token = '910437898:AAE9pmyFTMwATIsmXcNPVBv2z9SdP3nz_WA'
 bot = telebot.TeleBot(token)
 
 subreddit = None
