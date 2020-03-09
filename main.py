@@ -2,12 +2,16 @@ import praw
 import random
 import telebot
 
-#token = '966351011:AAGDUmgrpOfujpT5flyRlOn26Li-_U8f7Dg'
+token = '966351011:AAGDUmgrpOfujpT5flyRlOn26Li-_U8f7Dg'
 #Testbot token
-token = '910437898:AAE9pmyFTMwATIsmXcNPVBv2z9SdP3nz_WA'
+#token = '910437898:AAE9pmyFTMwATIsmXcNPVBv2z9SdP3nz_WA'
 bot = telebot.TeleBot(token)
 
 subreddit = None
+
+FFILTER = {}
+SOURCE = {}
+NSFW = {}
 
 def getPosts(sub):
     app_id = 'Vlu73kg2jM6Ueg'
@@ -35,65 +39,74 @@ def setover18(message):
     bot.register_next_step_handler(message, setOver18)
 
 def setOver18(message):
+    global NSFW
     if(message.text.lower() == 'y'):
-        f = open('nsfw_filter.txt', 'w')
-        f.write('1')
+        NSFW[message.chat.id] = '1'
         bot.send_message(message.chat.id, 'NSFW filter was set to 1')
     else:
-        f = open('nsfw_filter.txt', 'w')
-        f.write('0')
+        NSFW[message.chat.id] = '0'
         bot.send_message(message.chat.id, 'NSFW filter was set to 0')
 
 @bot.message_handler(commands=['getnsfw_filter'])
 def getnsfwfilter(message):
-    f = open('nsfw_filter.txt', 'r')
-    nsfw = f.readline()
-    bot.send_message(message.chat.id, nsfw)
+    try:
+        global NSFW
+        bot.send_message(message.chat.id, NSFW[message.chat.id])
+    except:
+        bot.send_message(message.chat.id, 'Specify filter first')
 @bot.message_handler(commands=['getsource'])
 def getsrc(message):
-    f = open('source.txt', 'r')
-    src = f.readline()
-    bot.send_message(message.chat.id, src)
-
+    try:
+        global SOURCE
+        src = SOURCE[message.chat.id]
+        bot.send_message(message.chat.id, src)
+    except:
+        bot.send_message(message.chat.id, 'Specify filter first')
 @bot.message_handler(commands=['source'])
 def source(message):
     bot.send_message(message.chat.id, 'Source URL: ')
     bot.register_next_step_handler(message, SetSource)
 
 def SetSource(message):
-    f = open('source.txt', 'w')
+    global SOURCE
     src = message.text
     if(src.lower() != 'all'):
-        f.write(src.lower())
-    else: f.write('0')
+        SOURCE[message.chat.id] = src.lower()
+    else: SOURCE[message.chat.id] = '0'
     bot.send_message(message.chat.id, 'Success!')
 
 @bot.message_handler(commands=['getfilter'])
 def getfilter(message):
-    f = open('filter.txt', 'r')
-    ff = f.readline()
-    bot.send_message(message.chat.id, '*.' + ff)
-
+    try:
+        global FFILTER 
+        ff = FFILTER[message.chat.id]
+        bot.send_message(message.chat.id, '*.' + ff)
+    except:
+        bot.send_message(message.chat.id, 'Specify filter first')
 @bot.message_handler(commands=['start'])
 def StartReply(message):
+    global NSFW, SOURCE, FFILTER
     bot.send_message(message.chat.id, "Hello!")
-
+    NSFW[message.chat.id] = '0'
+    FFILTER[message.chat.id] = '0'
+    SOURCE[message.chat.id] = '0'
 @bot.message_handler(commands=['filter'])
 def SetFilterInit(message):
     bot.send_message(message.chat.id, "Type file format:")
     bot.register_next_step_handler(message, SetFilter)
 
 def SetFilter(message):
-    f = open('filter.txt', 'w')
+    global FFILTER
     if(message.text.lower() == 'all'):
-        f.write('0')
-    else: f.write(message.text.lower())
+        FFILTER[message.chat.id] = '0'
+    else: FFILTER[message.chat.id] = message.text.lower()
     bot.send_message(message.chat.id, "Success!")
 
 def last(message):
     for num in range(24):
-        f = open('filter.txt', 'r')
-        content_filter = f.readline()
+        global FFILTER, SOURCE, NSFW
+        content_filter = FFILTER[message.chat.id]
+        source = SOURCE[message.chat.id]
         try:
             subreddit = message.text[1:]
             sub = subreddit
@@ -139,10 +152,9 @@ def last(message):
             print('Fatal: ' + str(ex))#bot.send_message(message.chat.id, "Seems like no such subreddit")
     bot.send_message(message.chat.id, "No such files. Try again")
 def Filter(message):
-    f = open('filter.txt', 'r')
-    ff = open('source.txt', 'r')
-    source = ff.readline()
-    content_filter = f.readline()
+    global FFILTER, SOURCE
+    source = SOURCE[message.chat.id]
+    content_filter = FFILTER[message.chat.id]
     try:
         subreddit = message.text[1:]
         #bot.send_message(message.chat.id, "Please, wait...")
@@ -180,12 +192,10 @@ def Filter(message):
     
 @bot.message_handler(content_types=['text'])
 def GetSub(message):
-    nsfw = open('nsfw_filter.txt', 'r')
-    f = open('filter.txt', 'r')
-    content_filter = f.readline()
-    ff = open('source.txt', 'r')
-    source = ff.readline()
-    over18 = nsfw.readline()
+    global FFILTER, SOURCE, NSFW
+    content_filter = FFILTER[message.chat.id]
+    source = SOURCE[message.chat.id]
+    over18 = NSFW[message.chat.id]
     print(str(len(source)))
     try:
         subreddit = message.text[1:]
