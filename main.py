@@ -153,9 +153,9 @@ def last(message):
     bot.send_message(message.chat.id, "No such files. Try again")
 def Filter(message):
     global FFILTER, SOURCE
-    source = SOURCE[message.chat.id]
-    content_filter = FFILTER[message.chat.id]
     try:
+        source = SOURCE[message.chat.id]
+        content_filter = FFILTER[message.chat.id]
         subreddit = message.text[1:]
         #bot.send_message(message.chat.id, "Please, wait...")
         post = getPosts(subreddit)
