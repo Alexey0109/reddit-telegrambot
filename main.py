@@ -101,7 +101,7 @@ def SetFilter(message):
         FFILTER[message.chat.id] = '0'
     else: FFILTER[message.chat.id] = message.text.lower()
     bot.send_message(message.chat.id, "Success!")
-
+    
 def last(message):
     for num in range(24):
         global FFILTER, SOURCE, NSFW
@@ -189,7 +189,7 @@ def Filter(message):
             last(message)
     except Exception as ex:
         bot.send_message(message.chat.id, str(ex))
-    
+        print(ex)
 @bot.message_handler(content_types=['text'])
 def GetSub(message):
     global FFILTER, SOURCE, NSFW
