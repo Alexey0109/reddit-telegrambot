@@ -158,7 +158,7 @@ def Filter(message):
     try:
         subreddit = message.text[1:]
         #bot.send_message(message.chat.id, "Please, wait...")
-        post = getPosts(subreddit).url
+        post = getPosts(subreddit)
         post_url = post.url
         #bot.send_message(message.chat.id, post_url)
         if (post.over_18):
