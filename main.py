@@ -1,17 +1,24 @@
 import praw
 import random
 import telebot
-
+import sys
 #token = '966351011:AAGDUmgrpOfujpT5flyRlOn26Li-_U8f7Dg'
 #Testbot token
 token = '910437898:AAE9pmyFTMwATIsmXcNPVBv2z9SdP3nz_WA'
+
+devt = '1115795697:AAF83mMjCPWWJ8mTPAMMbWcz3fdamomOs2w'
+
 bot = telebot.TeleBot(token)
+logger = telebot.TeleBot(devt)
+ID = 527294873
 
 subreddit = None
 
 FFILTER = {}
 SOURCE = {}
 NSFW = {}
+
+TOP_SUBS = {}
 
 def getPosts(sub):
     app_id = 'Vlu73kg2jM6Ueg'
@@ -32,6 +39,18 @@ def getPosts(sub):
     return urls[n]
 
 content_filter = None
+
+@bot.message_handler(commands=['top_sub'])
+def gettop(message):
+    global TOP_SUBS
+    try:
+        bot.send_message(message.chat.id, "Current top subreddit - " + str(max(TOP_SUBS, key=TOP_SUBS.get)) + " gets " + str(TOP_SUBS[max(TOP_SUBS, key=TOP_SUBS.get)]) + " requests")
+    except:
+        logger.send_message(ID, "@" + message.chat.username + " made an error: " + str(sys.exc_info()[0]))
+
+@bot.message_handler(commands=['help'])
+def help(message):
+    bot.send_message(message.chat.id, "Try https://telegra.ph/Methods-Documentation-03-10\nStill have questions? Text @KeyboardDestroyer")
 
 @bot.message_handler(commands=['nsfw_filter'])
 def setover18(message):
@@ -150,6 +169,7 @@ def last(message):
                 print('err')#bot.send_message(message.chat.id, "No such files. Try again")
         except Exception as ex:
             print('Fatal: ' + str(ex))#bot.send_message(message.chat.id, "Seems like no such subreddit")
+            logger.send_message(ID, "@" + message.chat.username + " made an error: " + str(sys.exc_info()[0]))
     bot.send_message(message.chat.id, "No such files. Try again")
 def Filter(message):
     global FFILTER, SOURCE
@@ -192,10 +212,20 @@ def Filter(message):
         print(ex)
 @bot.message_handler(content_types=['text'])
 def GetSub(message):
-    global FFILTER, SOURCE, NSFW
-    content_filter = FFILTER[message.chat.id]
-    source = SOURCE[message.chat.id]
-    over18 = NSFW[message.chat.id]
+    global FFILTER, SOURCE, NSFW, TOP_SUBS
+    try:
+        TOP_SUBS[message.text] += 1
+        print(TOP_SUBS[message.text])
+    except:
+        TOP_SUBS[message.text] = 1
+    try:
+        content_filter = FFILTER[message.chat.id]
+        source = SOURCE[message.chat.id]
+        over18 = NSFW[message.chat.id]
+    except:
+        bot.send_message(message.chat.id, 'Please, restart a bot')
+        logger.send_message(ID, "@" + message.chat.username + " made an error: " + str(sys.exc_info()[0]))
+        return
     print(str(len(source)))
     try:
         subreddit = message.text[1:]
@@ -233,4 +263,7 @@ def GetSub(message):
     except Exception as e:
         bot.send_message(message.chat.id, "Seems like no such subreddit")
         print(e)
+        logger.send_message(ID, "@" + message.chat.username + " made an error: " + str(sys.exc_info()[0]))
+        TOP_SUBS[message.text] -= 1
 bot.polling()
+logger.polling()
