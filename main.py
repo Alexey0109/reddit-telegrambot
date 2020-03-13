@@ -2,6 +2,7 @@ import praw
 import random
 import telebot
 import sys
+
 #token = '966351011:AAGDUmgrpOfujpT5flyRlOn26Li-_U8f7Dg'
 #Testbot token
 token = '910437898:AAE9pmyFTMwATIsmXcNPVBv2z9SdP3nz_WA'
@@ -40,6 +41,18 @@ def getPosts(sub):
 
 content_filter = None
 
+@bot.message_handler(commands=['sub_rating'])
+def getrate(message):
+    global TOP_SUBS
+    try:
+        #print("RATING!")
+        report = " "
+        for i in sorted (TOP_SUBS, key=TOP_SUBS.get, reverse=True) :  
+            if(TOP_SUBS[i] != 0):
+                report += (str(i) + " rating: " + str(TOP_SUBS[i]) + '\n') 
+        bot.send_message(message.chat.id, "SUBREDDIT RATING:\n" + report)
+    except:
+        logger.send_message(ID, "@" + message.chat.username + " made an error: " + str(sys.exc_info()[0]))
 @bot.message_handler(commands=['top_sub'])
 def gettop(message):
     global TOP_SUBS
