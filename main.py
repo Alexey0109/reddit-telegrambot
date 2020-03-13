@@ -152,9 +152,9 @@ def last(message):
             i = 0
             urls = {}
             for submission in reddit.subreddit(sub).new(limit=25):
-                urls[i] = submission.url
+                urls[i] = submission
                 i += 1
-            post_url = urls[num]
+            post_url = urls[num].title + "\n" + urls[num].url
             #bot.send_message(message.chat.id, post_url)
             fileformat = post_url[-3:]
             sourceurl = post_url[:len(source)]
@@ -192,7 +192,7 @@ def Filter(message):
         subreddit = message.text[1:]
         #bot.send_message(message.chat.id, "Please, wait...")
         post = getPosts(subreddit)
-        post_url = post.url
+        post_url = post.title + "\n" + post.url
         #bot.send_message(message.chat.id, post_url)
         if (post.over_18):
             if(over18 == '0'):
@@ -244,7 +244,7 @@ def GetSub(message):
         subreddit = message.text[1:]
         bot.send_message(message.chat.id, "Please, wait...")
         post = getPosts(subreddit)
-        post_url = post.url
+        post_url = post.title + "\n" + post.url
         #bot.send_message(message.chat.id, post_url)
         if (post.over_18):
             if(over18 == '0'):
