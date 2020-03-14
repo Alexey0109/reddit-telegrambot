@@ -7,6 +7,11 @@ import sys
 #Testbot token
 token = '910437898:AAE9pmyFTMwATIsmXcNPVBv2z9SdP3nz_WA'
 
+# TODO:
+# add flair filter
+# add displaying of flair
+
+
 devt = '1115795697:AAF83mMjCPWWJ8mTPAMMbWcz3fdamomOs2w'
 
 bot = telebot.TeleBot(token)
@@ -18,7 +23,7 @@ subreddit = None
 FFILTER = {}
 SOURCE = {}
 NSFW = {}
-
+FLAIR = {}
 TOP_SUBS = {}
 
 def getPosts(sub):
@@ -117,11 +122,12 @@ def getfilter(message):
         bot.send_message(message.chat.id, 'Specify filter first')
 @bot.message_handler(commands=['start'])
 def StartReply(message):
-    global NSFW, SOURCE, FFILTER
+    global NSFW, SOURCE, FFILTER, FLAIR
     bot.send_message(message.chat.id, "Hello!")
     NSFW[message.chat.id] = '0'
     FFILTER[message.chat.id] = '0'
     SOURCE[message.chat.id] = '0'
+    FLAIR[message.chat.id] = '0'
 @bot.message_handler(commands=['filter'])
 def SetFilterInit(message):
     bot.send_message(message.chat.id, "Type file format:")
@@ -154,7 +160,7 @@ def last(message):
             for submission in reddit.subreddit(sub).new(limit=25):
                 urls[i] = submission
                 i += 1
-            post_url = urls[num].title + "\n" + urls[num].url
+            post_url = urls[num].title + "\n[" + str(urls[num].link_flair_text) + "]\n" + urls[num].url
             #bot.send_message(message.chat.id, post_url)
             fileformat = post_url[-3:]
             sourceurl = post_url[:len(source)]
@@ -192,7 +198,7 @@ def Filter(message):
         subreddit = message.text[1:]
         #bot.send_message(message.chat.id, "Please, wait...")
         post = getPosts(subreddit)
-        post_url = post.title + "\n" + post.url
+        post_url = post.title + "\n[" + str(post.link_flair_text) + "]\n" + post.url
         #bot.send_message(message.chat.id, post_url)
         if (post.over_18):
             if(over18 == '0'):
@@ -206,11 +212,6 @@ def Filter(message):
                 return
         if(content_filter == '0'):
             bot.send_message(message.chat.id, post_url)
-        elif(content_filter == 'gfy'):
-            src = post_url[8:18]
-            if(src=='gfycat.com'):
-                bot.send_message(message.chat.id, post_url)
-            else: last(message)
         elif(content_filter == 'text'):
             if(post_url[-4] != '.'):
                 bot.send_message(message.chat.id, post_url)
@@ -244,7 +245,7 @@ def GetSub(message):
         subreddit = message.text[1:]
         bot.send_message(message.chat.id, "Please, wait...")
         post = getPosts(subreddit)
-        post_url = post.title + "\n" + post.url
+        post_url = post.title + "\n[" + str(post.link_flair_text) + "]\n" + post.url
         #bot.send_message(message.chat.id, post_url)
         if (post.over_18):
             if(over18 == '0'):
