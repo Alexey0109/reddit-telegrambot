@@ -3,9 +3,9 @@ import random
 import telebot
 import sys
 
-#token = '966351011:AAGDUmgrpOfujpT5flyRlOn26Li-_U8f7Dg'
+token = '966351011:AAGDUmgrpOfujpT5flyRlOn26Li-_U8f7Dg'
 #Testbot token
-token = '910437898:AAE9pmyFTMwATIsmXcNPVBv2z9SdP3nz_WA'
+#token = '910437898:AAE9pmyFTMwATIsmXcNPVBv2z9SdP3nz_WA'
 
 # TODO:
 # add flair filter
@@ -57,14 +57,14 @@ def getrate(message):
                 report += (str(i) + " rating: " + str(TOP_SUBS[i]) + '\n') 
         bot.send_message(message.chat.id, "SUBREDDIT RATING:\n" + report)
     except:
-        logger.send_message(ID, "@" + message.chat.username + " made an error: " + str(sys.exc_info()[0]))
+        logger.send_message(ID, "@" + message.chat.username + " | error: " + str(sys.exc_info()[0]))
 @bot.message_handler(commands=['top_sub'])
 def gettop(message):
     global TOP_SUBS
     try:
         bot.send_message(message.chat.id, "Current top subreddit - " + str(max(TOP_SUBS, key=TOP_SUBS.get)) + " gets " + str(TOP_SUBS[max(TOP_SUBS, key=TOP_SUBS.get)]) + " requests")
     except:
-        logger.send_message(ID, "@" + message.chat.username + " made an error: " + str(sys.exc_info()[0]))
+        logger.send_message(ID, "@" + message.chat.username + " | error: " + str(sys.exc_info()[0]))
 
 @bot.message_handler(commands=['help'])
 def help(message):
@@ -123,11 +123,22 @@ def getfilter(message):
 @bot.message_handler(commands=['start'])
 def StartReply(message):
     global NSFW, SOURCE, FFILTER, FLAIR
-    bot.send_message(message.chat.id, "Hello!")
+    #bot.send_message(message.chat.id, "Hello!")
     NSFW[message.chat.id] = '0'
     FFILTER[message.chat.id] = '0'
     SOURCE[message.chat.id] = '0'
     FLAIR[message.chat.id] = '0'
+    global TOP_SUBS
+    try:
+        #print("RATING!")
+        report = " "
+        for i in sorted (TOP_SUBS, key=TOP_SUBS.get, reverse=True) :
+            if(TOP_SUBS[i] != 0):
+                report += (str(i) + " rating: " + str(TOP_SUBS[i]) + '\n')
+        bot.send_message(message.chat.id, "Hello! Welcome to SubredditPostGetter bot! Here you can quickly get some posts from different subreddits! To get some help type /help or text @KeyboardDestroyer \nHere you can see some popular subreddits: \n" + "SUBREDDIT RATING:\n" + report)
+    except:
+        logger.send_message(ID, "@" + message.chat.username + " | error: " + str(sys.exc_info()[0]))
+
 @bot.message_handler(commands=['filter'])
 def SetFilterInit(message):
     bot.send_message(message.chat.id, "Type file format:")
@@ -188,7 +199,7 @@ def last(message):
                 print('err')#bot.send_message(message.chat.id, "No such files. Try again")
         except Exception as ex:
             print('Fatal: ' + str(ex))#bot.send_message(message.chat.id, "Seems like no such subreddit")
-            logger.send_message(ID, "@" + message.chat.username + " made an error: " + str(sys.exc_info()[0]))
+            logger.send_message(ID, "@" + message.chat.username + " | error: " + str(sys.exc_info()[0]))
     bot.send_message(message.chat.id, "No such files. Try again")
 def Filter(message):
     global FFILTER, SOURCE
@@ -238,7 +249,7 @@ def GetSub(message):
         over18 = NSFW[message.chat.id]
     except:
         bot.send_message(message.chat.id, 'Please, restart a bot')
-        logger.send_message(ID, "@" + message.chat.username + " made an error: " + str(sys.exc_info()[0]))
+        logger.send_message(ID, "@" + message.chat.username + " | error: " + str(sys.exc_info()[0]))
         return
     print(str(len(source)))
     try:
@@ -275,9 +286,9 @@ def GetSub(message):
         else:
             Filter(message)
     except Exception as e:
-        bot.send_message(message.chat.id, "Seems like no such subreddit")
+        bot.send_message(message.chat.id, "Seems like no such subreddit. Try again")
         print(e)
-        logger.send_message(ID, "@" + message.chat.username + " made an error: " + str(sys.exc_info()[0]))
+        logger.send_message(ID, "@" + message.chat.username + " | error: " + str(sys.exc_info()[0]))
         TOP_SUBS[message.text] -= 1
 bot.polling()
 logger.polling()
