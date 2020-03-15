@@ -3,9 +3,9 @@ import random
 import telebot
 import sys
 
-token = '966351011:AAGDUmgrpOfujpT5flyRlOn26Li-_U8f7Dg'
+#token = '966351011:AAGDUmgrpOfujpT5flyRlOn26Li-_U8f7Dg'
 #Testbot token
-#token = '910437898:AAE9pmyFTMwATIsmXcNPVBv2z9SdP3nz_WA'
+token = '910437898:AAE9pmyFTMwATIsmXcNPVBv2z9SdP3nz_WA'
 
 # TODO:
 # add flair filter
