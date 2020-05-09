@@ -1,18 +1,19 @@
+import config
 import praw
 import random
 import telebot
 import sys
 
-#token = '966351011:AAGDUmgrpOfujpT5flyRlOn26Li-_U8f7Dg'
+token = config.TESTTOKEN
 #Testbot token
-token = '910437898:AAE9pmyFTMwATIsmXcNPVBv2z9SdP3nz_WA'
+#token = config.TOKEN
 
 # TODO:
 # add flair filter
 # add displaying of flair
 
 
-devt = '1115795697:AAF83mMjCPWWJ8mTPAMMbWcz3fdamomOs2w'
+devt = config.DEVTOKEN
 
 bot = telebot.TeleBot(token)
 logger = telebot.TeleBot(devt)
