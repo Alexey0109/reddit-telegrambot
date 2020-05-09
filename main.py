@@ -28,8 +28,8 @@ FLAIR = {}
 TOP_SUBS = {}
 
 def getPosts(sub):
-    app_id = 'Vlu73kg2jM6Ueg'
-    secret = 'YB7yFBbo67SlXo44x9hNG7Ae0Kc'
+    app_id = config.appid
+    secret = config.secret
     reddit = praw.Reddit(client_id=app_id,
                      client_secret=secret,
                      user_agent='testscript')
