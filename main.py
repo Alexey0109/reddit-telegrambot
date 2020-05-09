@@ -4,9 +4,9 @@ import random
 import telebot
 import sys
 
-token = config.TESTTOKEN
+#token = config.TESTTOKEN
 #Testbot token
-#token = config.TOKEN
+token = config.TOKEN
 
 # TODO:
 # add flair filter
