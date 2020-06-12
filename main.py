@@ -36,11 +36,10 @@ def getPosts(sub):
     print(reddit)
     i = 0
     urls = {}
-    for submission in reddit.subreddit(sub).new(limit=25):
+    for submission in reddit.subreddit(sub).new(limit=100):
         urls[i] = submission
         i += 1
-    n = random.randint(0, 25)
-    if n == 25: n - 1
+    n = random.randint(0, 100)
     print(n, end=': ')
     print(urls[n])
     return urls[n]
