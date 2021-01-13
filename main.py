@@ -35,14 +35,8 @@ def getPosts(sub):
                      user_agent='testscript')
     print(reddit)
     i = 0
-    urls = {}
-    for submission in reddit.subreddit(sub).new(limit=100):
-        urls[i] = submission
-        i += 1
-    n = random.randint(0, 100)
-    print(n, end=': ')
-    print(urls[n])
-    return urls[n]
+    submission = reddit.subreddit(sub).random()
+    return submission
 
 content_filter = None
 
@@ -51,13 +45,14 @@ def getrate(message):
     global TOP_SUBS
     try:
         #print("RATING!")
-        report = " "
+        report = ""
         for i in sorted (TOP_SUBS, key=TOP_SUBS.get, reverse=True) :  
             if(TOP_SUBS[i] != 0):
                 report += (str(i) + " rating: " + str(TOP_SUBS[i]) + '\n') 
         bot.send_message(message.chat.id, "SUBREDDIT RATING:\n" + report)
     except:
         logger.send_message(ID, "@" + message.chat.username + " | error: " + str(sys.exc_info()[0]))
+
 @bot.message_handler(commands=['top_sub'])
 def gettop(message):
     global TOP_SUBS
@@ -91,6 +86,7 @@ def getnsfwfilter(message):
         bot.send_message(message.chat.id, NSFW[message.chat.id])
     except:
         bot.send_message(message.chat.id, 'Specify filter first')
+
 @bot.message_handler(commands=['getsource'])
 def getsrc(message):
     try:
@@ -99,6 +95,7 @@ def getsrc(message):
         bot.send_message(message.chat.id, src)
     except:
         bot.send_message(message.chat.id, 'Specify filter first')
+
 @bot.message_handler(commands=['source'])
 def source(message):
     bot.send_message(message.chat.id, 'Source URL: ')
@@ -120,6 +117,7 @@ def getfilter(message):
         bot.send_message(message.chat.id, '*.' + ff)
     except:
         bot.send_message(message.chat.id, 'Specify filter first')
+
 @bot.message_handler(commands=['start'])
 def StartReply(message):
     global NSFW, SOURCE, FFILTER, FLAIR
@@ -201,6 +199,7 @@ def last(message):
             print('Fatal: ' + str(ex))#bot.send_message(message.chat.id, "Seems like no such subreddit")
             logger.send_message(ID, "@" + message.chat.username + " | error: " + str(sys.exc_info()[0]))
     bot.send_message(message.chat.id, "No such files. Try again")
+
 def Filter(message):
     global FFILTER, SOURCE
     try:
@@ -235,6 +234,7 @@ def Filter(message):
     except Exception as ex:
         bot.send_message(message.chat.id, str(ex))
         print(ex)
+
 @bot.message_handler(content_types=['text'])
 def GetSub(message):
     global FFILTER, SOURCE, NSFW, TOP_SUBS
